@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Akounta Togo - Comptabilité Vocale & SaaS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-950 text-white min-h-screen font-sans pb-16 antialiased">
+  <div class="max-w-lg mx-auto p-4 space-y-4">
+
+    <!-- ÉCRAN 1 : CONNEXION / INSCRIPTION SÉCURISÉE (Affiché si non connecté) -->
+    <div id="auth-screen" class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-2xl space-y-5">
+      <div class="text-center space-y-1">
+        <span class="text-4xl">🇹🇬</span>
+        <h1 class="text-2xl font-black text-amber-400 tracking-tight">Akounta Togo</h1>
+        <p class="text-xs text-slate-400">Votre logiciel de comptabilité 100% vocale par IA</p>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="text-[11px] font-bold uppercase text-slate-400">Numéro de téléphone togolais</label>
+          <input id="login-phone" type="tel" placeholder="+228 90 00 00 00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-amber-400">
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase text-slate-400">Nom du commerce ou prénom</label>
+          <input id="login-name" type="text" placeholder="Ex: Boutique Mawusi" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm font-semibold focus:outline-none focus:border-amber-400">
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase text-slate-400">Code secret PIN (4 chiffres)</label>
+          <input id="login-pin" type="password" maxlength="4" placeholder="1234" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm font-semibold tracking-widest focus:outline-none focus:border-amber-400">
+        </div>
+        <button id="login-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition duration-200 uppercase text-xs tracking-wider shadow-lg">
+          Accéder à mon livre de comptes
+        </button>
+      </div>
+      <p class="text-[10px] text-center text-slate-500">14 jours d'essai gratuit offert à chaque nouveau compte !</p>
+    </div>
+
+    <!-- ÉCRAN 2 : APPLICATION COMPTABLE COMPLÈTE (Affiché si connecté) -->
+    <div id="main-app" class="hidden space-y-4">
+      
+      <!-- En-tête commerçant & Déconnexion -->
+      <header class="bg-slate-900 p-4 rounded-2xl shadow-xl border border-slate-800 flex justify-between items-center">
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-base font-black text-amber-400 uppercase" id="trader-name">Mon Commerce</h1>
+          </div>
+          <p id="trader-phone" class="text-xs text-slate-400">+228...</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span id="badge-pill" class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-700/50">Bronze</span>
+          <button id="logout-btn" class="text-xs text-rose-400 font-bold bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded-lg">Sortir</button>
+        </div>
+      </header>
+
+      <!-- BANNIÈRE D'ABONNEMENT SAAS (Monétisation) -->
+      <div id="sub-banner" class="bg-gradient-to-r from-amber-950/60 to-slate-900 p-3.5 rounded-2xl border border-amber-800/60 flex justify-between items-center">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-amber-400">Forfait Actif : <span id="sub-plan-name">Essai Gratuit</span></span>
+          <p class="text-xs text-slate-300">Expire le : <strong id="sub-expiry-date">--/--/----</strong></p>
+        </div>
+        <button id="open-sub-modal" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xs uppercase tracking-wide transition shadow">
+          Renouveler
+        </button>
+      </div>
+
+      <!-- LIVRE DE COMPTES EN TEMPS RÉEL (Calculé par les agents IA) -->
+      <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-md space-y-3">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">📊 Livre de Comptes</span>
+          <button id="export-btn" class="text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-amber-300 px-2.5 py-1 rounded-lg border border-slate-700 transition">
+            Télécharger Grand Livre (CSV)
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="bg-slate-950/70 p-3 rounded-xl border border-emerald-900/40">
+            <span class="text-[10px] uppercase font-bold text-slate-400">Total Ventes (Recettes)</span>
+            <div class="text-xl font-extrabold text-emerald-400 mt-1" id="compta-ventes">0 FCFA</div>
+          </div>
+          <div class="bg-slate-950/70 p-3 rounded-xl border border-rose-900/40">
+            <span class="text-[10px] uppercase font-bold text-slate-400">Total Achats (Dépenses)</span>
+            <div class="text-xl font-extrabold text-rose-400 mt-1" id="compta-achats">0 FCFA</div>
+          </div>
+          <div class="bg-slate-950/70 p-3 rounded-xl border border-sky-900/40">
+            <span class="text-[10px] uppercase font-bold text-slate-400">Bénéfice Net Caisse</span>
+            <div class="text-xl font-extrabold text-sky-400 mt-1" id="compta-benefice">0 FCFA</div>
+          </div>
+          <div class="bg-slate-950/70 p-3 rounded-xl border border-amber-900/40">
+            <span class="text-[10px] uppercase font-bold text-slate-400">Dettes à Recouvrer</span>
+            <div class="text-xl font-extrabold text-amber-400 mt-1" id="compta-dettes">0 FCFA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARTE DE SCORE & MICRO-CRÉDIT -->
+      <div class="bg-gradient-to-r from-slate-900 to-slate-850 p-4 rounded-2xl border border-slate-800 shadow-md">
+        <div class="flex justify-between items-end mb-2">
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Score de Solvabilité</span>
+            <div class="text-2xl font-black" id="score-val">300 <span class="text-xs font-normal text-slate-400">/ 1000 pts</span></div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400">Prêt accessible :</span>
+            <div class="text-base font-black text-emerald-400" id="loan-val">0 FCFA</div>
+          </div>
+        </div>
+        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+          <div id="score-bar" class="bg-amber-400 h-2 rounded-full transition-all duration-700" style="width: 30%"></div>
+        </div>
+      </div>
+
+      <!-- TERMINAL VOCAL 100% MICROPHONE -->
+      <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-center space-y-3">
+        <div class="space-y-1">
+          <h2 class="font-bold text-sm text-slate-200">🎙️ Parlez à vos Agents IA</h2>
+          <p class="text-xs text-slate-400">Dictez vos opérations en français ou éwé :</p>
+        </div>
+        <button id="record-btn" class="w-24 h-24 mx-auto rounded-full bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 flex flex-col items-center justify-center shadow-2xl transition duration-200 ring-4 ring-amber-500/20">
+          <svg id="mic-icon" class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        </button>
+        <div id="record-status" class="text-xs font-semibold text-slate-300 uppercase tracking-wide">Appuyez pour parler</div>
+      </div>
+
+      <div id="fraud-alert" class="hidden p-3.5 rounded-xl text-xs font-bold text-center border"></div>
+
+      <!-- JOURNAL DES ÉCRITURES -->
+      <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-3">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">📖 Journal des Écritures</h3>
+          <span class="text-[10px] text-slate-400" id="tx-count">0 écriture(s)</span>
+        </div>
+        <div id="transaction-list" class="space-y-2 text-xs"></div>
+      </div>
+
+    </div>
+
+    <!-- MODAL D'ABONNEMENT (T-Money / Moov Money) -->
+    <div id="sub-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl max-w-sm w-full space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-amber-400 text-sm uppercase">Abonnement Akounta Togo</h3>
+          <button id="close-sub-modal" class="text-slate-400 hover:text-white font-black">✕</button>
+        </div>
+        <p class="text-xs text-slate-300">Choisissez votre formule pour continuer à utiliser la comptabilité vocale :</p>
+        
+        <div class="space-y-2">
+          <label class="flex justify-between items-center p-3 rounded-xl border border-slate-800 bg-slate-950 cursor-pointer">
+            <div>
+              <div class="font-bold text-xs text-white">Forfait Mensuel</div>
+              <div class="text-[10px] text-slate-400">Accès illimité pendant 30 jours</div>
+            </div>
+            <div class="font-black text-amber-400 text-sm">2 000 FCFA</div>
+            <input type="radio" name="sub-plan" value="MENSUEL" checked class="ml-2">
+          </label>
+
+          <label class="flex justify-between items-center p-3 rounded-xl border border-slate-800 bg-slate-950 cursor-pointer">
+            <div>
+              <div class="font-bold text-xs text-white">Forfait Annuel (Économique)</div>
+              <div class="text-[10px] text-slate-400">1 an complet (2 mois offerts)</div>
+            </div>
+            <div class="font-black text-emerald-400 text-sm">20 000 FCFA</div>
+            <input type="radio" name="sub-plan" value="ANNUEL" class="ml-2">
+          </label>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase font-bold text-slate-400">Moyen de paiement</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" class="pay-method-btn bg-amber-500 text-slate-950 font-bold py-2 rounded-lg text-xs" data-method="TMONEY">T-Money</button>
+            <button type="button" class="pay-method-btn bg-slate-800 text-slate-300 font-bold py-2 rounded-lg text-xs" data-method="MOOV_MONEY">Moov Money</button>
+          </div>
+        </div>
+
+        <button id="confirm-sub-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-2.5 rounded-xl text-xs uppercase tracking-wider transition">
+          Payer et Activer l'Abonnement
+        </button>
+      </div>
+    </div>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
