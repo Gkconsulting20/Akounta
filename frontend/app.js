@@ -1,6 +1,6 @@
 const API_BASE_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:8000' 
-  : 'https://votre-backend-akounta.onrender.com';
+  : https://akounta-backend.onrender.com
 
 let currentTraderId = 1;
 let mediaRecorder;
