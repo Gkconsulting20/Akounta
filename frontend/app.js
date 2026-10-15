@@ -1,6 +1,6 @@
 const API_BASE_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:8000' 
-  : 'https://votre-backend-akounta.onrender.com';
+ https://akounta-backend.onrender.com
 
 let userToken = localStorage.getItem('akounta_token');
 let selectedPaymentMethod = 'TMONEY';
