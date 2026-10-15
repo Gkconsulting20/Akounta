@@ -1,8 +1,0 @@
-{
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "akounta",
-  "compatibility_date": "2024-04-01",
-  "assets": {
-    "directory": "frontend"
-  }
-}
